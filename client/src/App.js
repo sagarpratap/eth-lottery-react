@@ -5,7 +5,7 @@ import getWeb3 from "./getWeb3";
 import "./App.css";
 
 class App extends Component {
-  state = { lotteryValue: 0, organiser: null, web3: null, accounts: null, contract: null };
+  state = { lotteryValue: 0, organiser: null, lotteryWinner: null, web3: null, accounts: null, contract: null };
 
   componentDidMount = async () => {
     try {
@@ -26,6 +26,13 @@ class App extends Component {
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: instance }, this.runExample);
+
+    // Get the value from the contract to prove it worked.
+    const response = await instance.methods.getValue().call();
+
+    // Update state with the result.
+    this.setState({ lotteryValue: response });
+
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -54,6 +61,14 @@ class App extends Component {
 
     await contract.methods.enter().send({from:accounts[0], value: 1000000000000000000});
 
+  };
+
+
+  newUserEntry = async() =>{
+    const { accounts, contract } = this.state;
+
+    await contract.methods.enter().send({from:accounts[0], value: 1000000000000000000});
+
     // Get the value from the contract to prove it worked.
     const response = await contract.methods.getValue().call();
 
@@ -61,8 +76,27 @@ class App extends Component {
     this.setState({ lotteryValue: response });
   };
 
+  runLottery = async() =>{
+    const { accounts, contract } = this.state;
 
+    await contract.methods.runLottery().send({from:accounts[0]});
 
+    // Get the value from the contract to prove it worked.
+    const response = await contract.methods.getWinner().call();
+
+    // Update state with the result.
+    this.setState({ lotteryWinner: response });
+  };
+
+  isWinnerAnnounced = () =>
+  {
+    const hasWinner = this.state.lotteryWinner != null;
+    if(hasWinner)
+    return <h3>Winner not announced yet!</h3>;
+    else return <h3>Winner is {this.state.lotteryWinner}</h3>;
+  }
+
+  
 
   render() {
     if (!this.state.web3) {
@@ -81,6 +115,17 @@ class App extends Component {
         </h3>
 
         <button onClick={this.newUserEntry}>Enter lottery</button>
+
+        <h3>
+          Run Lottery (Requires Organiser)
+        </h3>
+
+        <button onClick={this.runLottery}>Run Lottery</button>
+
+        <div>
+         <h3>{this.state.lotteryWinner == null ? 'No winner yet!' : 'Winner is ' + this.state.lotteryWinner}</h3>
+        </div>        
+
 
       </div>
     );

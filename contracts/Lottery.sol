@@ -40,6 +40,12 @@ contract Lottery {
         _;
     }
 
+    //Modifier to check that the organiser is the one calling the method to pick winner
+    modifier lotteryHasBalance() {
+        require(address(this).balance > 0);
+        _;
+    }    
+
     //Method to generate pseudo random number which uses block timestamp
     function randomize() public view returns(uint) {
         //use keccak256 hashnpm
@@ -49,40 +55,19 @@ contract Lottery {
         return uint(hash);
     }
 
-/*
-    function pickWinner() public payable organiserOnly {
-        //get random winning index using modulo of number of players
-        //uint winnerIndex = randomize() % players.length;
-        uint winnerIndex = 1;
 
-        //transfer lottery pool or contract balance to winning address
-        players[winnerIndex].transfer(address(this).balance);
-
-        //zerolise player list
-        players = new address payable [](0);
-    }
-*/
-
-    function runLottery() public payable organiserOnly returns (address player) {
+    function runLottery() public payable organiserOnly lotteryHasBalance returns (address player) {
         //get random winning index using modulo of number of players
         uint winnerIndex = randomize() % players.length;
-        //console.log("Entered pickWinner");
-
-        //uint winnerIndex = 1;
-
-        //console.log("Winning address is", players[winnerIndex]);
-
-        //transfer lottery pool or contract balance to winning address
-        //console.log("Sender balance is %s tokens", address(this).balance);
 
         players[winnerIndex].transfer(address(this).balance);
 
         winner = players[winnerIndex];
 
-        return players[winnerIndex];
-
         //zerolise player list
-        //players = new address payable [](0);
+       // players = new address payable [](0);
+
+        return players[winnerIndex];
     }
 
     function getWinner() public view returns (address) {

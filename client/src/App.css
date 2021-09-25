@@ -20,3 +20,46 @@
 .App-link {
   color: #09d3ac;
 }
+
+.logo {
+  margin-right:15px;
+}
+
+
+.heroContent {
+  background-color: #424242;
+  padding: 64px 0px 48px;
+  color:#fff;
+}
+
+.heroButtons {
+  margin-top: 48px;
+}
+
+.cardGrid {
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+.card {
+  height: '100%';
+  display: 'flex';
+  flex-direction: 'column';
+}
+
+.cardMedia {
+  padding-top: '56.25%';
+}
+
+.cardContent {
+  flex-grow: 1,
+}
+
+.footer {
+  background-color: #424242;
+  padding: 48px;
+}
+
+.hidden {
+  display: none;
+}

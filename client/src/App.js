@@ -1,6 +1,27 @@
 import React, { Component } from "react";
 import LotteryContract from "./contracts/Lottery.json";
 import getWeb3 from "./getWeb3";
+import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
+import CameraIcon from '@material-ui/icons/PhotoCamera';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Grid from '@material-ui/core/Grid';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Link from '@material-ui/core/Link';
+import Icon from '@material-ui/core/Icon';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+
 
 import "./App.css";
 
@@ -9,11 +30,13 @@ class App extends Component {
 
   componentDidMount = async () => {
     try {
+      //const classes = useStyles();
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
 
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts();
+      console.log(accounts[0]);
 
       // get current account
       const defaultAccount = accounts[0];
@@ -58,7 +81,8 @@ class App extends Component {
     const balance = await contract.methods.getValue().call();
 
     // Update state with the result.
-    this.setState({ organiser: organiser, lotteryValue: balance });
+    this.setState({ organiser: organiser, lotteryValue: balance, isOrganiser:organiser == accounts[0] });
+    
   };
 
 
@@ -123,35 +147,59 @@ class App extends Component {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
     return (
-      <div className="App">
-        <h1>Good to Go!</h1>
-        <p>Detected your metamask account {this.state.currentAccount}</p>
-        <h2>Lottery Smart Contract</h2>
-        <div>Organiser address is {this.state.organiser}</div>
-        <div> <h3>Total Lottery Value is {this.state.lotteryValue/1000000000000000000} ETH </h3> </div>
+      <React.Fragment>
+        <CssBaseline />
+        <AppBar position="relative">
+          <Toolbar>
+            <Icon className="logo">videogame_asset</Icon>
+            <Typography variant="h6" color="inherit" noWrap>
+                Lucky Draw Smart Contract
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <main>
+          <div className="heroContent">
+            <Container maxWidth="sm">
+              <Typography component="h1" variant="h2" align="center" color="white" gutterBottom>
+                Lucky Draw Smart Contract
+              </Typography>
+              <Typography variant="h5" align="center" color="white" paragraph>
+                
+              </Typography>
+              
+            </Container>
+          </div>
+        </main>
+        <div className="App">
+        <div className="heroButtons">
+                <Grid container spacing={2} justifyContent="center">
+                  <Grid className={this.state.isOrganiser ? 'hidden' : undefined} item>
+                  
+                    <Button onClick={this.newUserEntry} variant="contained" color="primary">
+                      Enter Lucky Draw
+                    </Button>
+                  </Grid>
+                  <Grid className={this.state.isOrganiser ? undefined:'hidden'} item>
+                    <Button onClick={this.runLottery} variant="outlined" color="primary">
+                      Pick Winner
+                    </Button>
+                  </Grid>
+                </Grid>
+              </div>
+          {/*<div>Organiser address is {this.state.organiser}</div>
+          <div>current is {this.state.accounts[0]}</div>*/}
+          <div> <h3>Lottery value is {this.state.lotteryValue/1000000000000000000} ether </h3> </div>
 
-        {/* <div>
-          <h3>Lottery Participants</h3>
-          {this.state.players}
-        </div> */}
-        <h3>
-          Press the button to enter the lottery. Entry cost 1 ETH
-        </h3>
+         
+         
 
-        <button onClick={this.newUserEntry}>Enter lottery</button>
-
-        <h3>
-          Run Lottery (Requires Organiser)
-        </h3>
-
-        <button onClick={this.runLottery}>Run Lottery</button>
-
-        <div>
-         <h3>{this.state.lotteryWinner == null ? 'No winner yet!' : 'Winner is ' + this.state.lotteryWinner}</h3>
-        </div>        
+          <div>
+          <h3>{this.state.lotteryWinner == null ? 'No winner yet!' : 'Winner is ' + this.state.lotteryWinner}</h3>
+          </div>        
 
 
-      </div>
+        </div>
+      </React.Fragment>
     );
   }
 }
